@@ -32,7 +32,6 @@ def generate_obstacle():
 fruit_effects = {
     'normal': {'score': 10, 'effect': None},
     'speed_boost': {'score': 5, 'effect': 'increase_speed', 'duration': 100},
-    #'size_reduce': {'score': 0, 'effect': 'reduce_size', 'amount': 1},
     'bonus_points': {'score': 20, 'effect': None}
 }
 
@@ -65,26 +64,24 @@ def decide_direction(target_fruit):
     min_distance = float('inf')
     for dir, delta in direction_deltas.items():
         new_position = [snake_position[0] + delta[0], snake_position[1] + delta[1]]
-        if not is_collision(new_position) and distance(new_position, target_fruit['pos']) < min_distance:
+        if not is_collision(new_position, exclude_head=False) and distance(new_position, target_fruit['pos']) < min_distance:
             best_direction = dir
             min_distance = distance(new_position, target_fruit['pos'])
     return best_direction
 
 def apply_fruit_effect(fruit):
-    global snake_speed, snake_body
+    global snake_speed
     effect = fruit['effect']
     if effect == 'increase_speed':
-        print("fast effect")
-        snake_speed += 5
-    # elif effect == 'reduce_size' and len(snake_body) > fruit['amount']:
-    #     snake_body = snake_body[:-fruit['amount']]
+        snake_speed += 5  # Ejemplo: Aumenta la velocidad temporalmente
+    # Implementa otros efectos según sea necesario
 
 def update_snake(dir):
-    global score, fruit_positions, snake_position, snake_body, snake_speed, obstacles, running, move_counter
+    global score, fruit_positions, snake_position, snake_body, running, move_counter
     delta = direction_deltas[dir]
     new_position = [snake_position[0] + delta[0], snake_position[1] + delta[1]]
 
-    if is_collision(new_position):
+    if is_collision(new_position, False):
         print("Collision detected. Game over.")
         running = False
         return
@@ -108,7 +105,7 @@ def update_snake(dir):
     move_counter += 1
     if move_counter >= 100:
         obstacles.append(generate_obstacle())
-        move_counter = 0  # Restablecer el contador después de generar un obstáculo
+        move_counter = 0
 
 def draw_obstacles():
     for ob in obstacles[:]:
